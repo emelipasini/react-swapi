@@ -4,7 +4,11 @@ header, footer {
 header li, footer li {
     display: inline-block;
 }
-.carta {
+.resource-card {
     width: 18rem;
     background-color: #66619e33 !important;
+    margin: 2%;
+}
+main {
+    margin: 5%;
 }

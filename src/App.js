@@ -2,13 +2,9 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import './App.css';
 
-import People from "./components/People";
-import Planets from "./components/Planets";
+// Components
 import Home from "./components/Home";
-import Films from "./components/Films";
-import Species from "./components/Species";
-import Starships from "./components/Starships";
-import Vehicles from "./components/Vehicles";
+import Resource from "./components/Resource";
 
 class App extends Component {
     render() {
@@ -30,12 +26,24 @@ class App extends Component {
                     </header>
                     <Switch>
                         <Route exact path="/" component={Home} />
-                        <Route path="/people" component={People} />
-                        <Route path="/planets" component={Planets} />
-                        <Route exact path="/films" component={Films} />
-                        <Route exact path="/species" component={Species} />
-                        <Route exact path="/starships" component={Starships} />
-                        <Route exact path="/vehicles" component={Vehicles} />
+                        <Route path="/people" render={props => (
+                            <Resource {...props} url="people" />
+                        )} />
+                        <Route path="/planets" render={props => (
+                            <Resource {...props} url="planets" />
+                        )} />
+                        <Route path="/films" render={props => (
+                            <Resource {...props} url="films" />
+                        )} />
+                        <Route path="/species" render={props => (
+                            <Resource {...props} url="species" />
+                        )} />
+                        <Route path="/starships" render={props => (
+                            <Resource {...props} url="starships" />
+                        )} />
+                        <Route path="/vehicles" render={props => (
+                            <Resource {...props} url="vehicles" />
+                        )} />
                     </Switch>
                 </Router>
 
