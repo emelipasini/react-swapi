@@ -1,2 +1,10 @@
 # react-swapi
-Una aplicación en React que consume la Swapi
+
+Link a Swapi:
+- https://swapi.dev/
+
+## Comandos
+```bash
+npm install
+npm start
+```

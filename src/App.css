@@ -1,0 +1,10 @@
+header, footer {
+    background-color: #0f0c29;
+}
+header li, footer li {
+    display: inline-block;
+}
+.carta {
+    width: 18rem;
+    background-color: #66619e33 !important;
+}
