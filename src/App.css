@@ -7,8 +7,9 @@ header li, footer li {
 .resource-card {
     width: 18rem;
     background-color: #66619e33 !important;
-    margin: 2%;
+    margin: 4%;
 }
-main {
-    margin: 5%;
+h2 {
+    padding-top: 5%;
+    padding-bottom: 2%;
 }

@@ -1,10 +1,12 @@
 import React, { Component } from "react";
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
-import Modal from 'react-bootstrap/Modal';
+
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
+import Spinner from 'react-bootstrap/Spinner';
+
 
 class Resource extends Component {
     constructor(props) {
@@ -12,53 +14,77 @@ class Resource extends Component {
         this.state = {
             data: [],
             url: props.url,
-            show: false,
-            selected: []
+            loading: true,
+            nextPage: ""
         };
     }
 
-    componentDidMount() {
-        fetch("https://swapi.dev/api/" + this.state.url)
+    fetchCall = (endpoint, callback) => {
+        fetch(endpoint)
             .then(res => res.json())
-            .then(data => {
+            .then(data => callback(data))
+            .catch(err => console.log(err));
+    }
+
+    componentDidMount() {
+        this.fetchCall(
+            "https://swapi.dev/api/" + this.state.url,
+            data => {
+                let nextp = data.next;
+                nextp = nextp.replace("http:", "https:");
                 this.setState({
-                    data: data.results
-                })
-            }).catch(err => console.log(err));
+                    nextPage: nextp,
+                    data: data.results,
+                    loading: false
+                });
+            }
+        );
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.url !== prevProps.url) {
             this.setState({
                 url: this.props.url
-            })
+            });
+            this.fetchCall(
+                "https://swapi.dev/api/" + this.state.url,
+                data => {
+                    this.setState({
+                        data: data.results,
+                        loading: false,
+                        nextPage: data.next
+                    });
+                }
+            );
         }
-        fetch("https://swapi.dev/api/" + this.state.url)
-            .then(res => res.json())
-            .then(data => {
-                this.setState({
-                    data: data.results
-                })
-            }).catch(err => console.log(err));
     }
 
-    showModal(selected) {
+    loadMore = () => {
+        let {nextPage} = this.state;
+        let oldData = this.state.data;
         this.setState({
-            show: true,
-            selected: selected
-        })
-    }
-    hideModal() {
-        this.setState({
-            show: false
-        })
+            loading: true
+        });
+        this.fetchCall(
+            nextPage, data => {
+                let nextp = data.next;
+                nextp = nextp.replace("http:", "https:");
+                this.setState({
+                    data: [...oldData, ...data.results],
+                    nextPage: nextp,
+                    loading: false
+                }, function () {
+                    console.log(this.state.data);
+                })
+            }
+        );
     }
 
     render() {
-        let { data, url, show, selected } = this.state;
+        let { data, url, loading } = this.state;
         if(!data) {
             return (
-                <div>
+                <div className="m-3">
                     <h1>Sorry!</h1>
                     <h2>The API isn't working right now. :/</h2>
                     <p>Hopefully it would be back soon.</p>
@@ -70,53 +96,39 @@ class Resource extends Component {
             <Container>
                 <h2 className="my-2">{url.toUpperCase()}</h2>
                 <Row>
-                    {data.map((fact, i) => {
-                        return (
-                            <Col sm={12} md={6} lg={4} key={"col" + i}>
-                                <Card className="resource-card d-flex align-items-center" key={"card" + fact + i} >
-                                    {
-                                        (url === "films")
-                                        ? <p className="p-1 px-4 m-1 w-100 d-flex justify-content-between align-items-center" key={fact + i}>
-                                            {fact.title}
-                                            <Button onClick={() => this.showModal(fact)}>
-                                                +
-                                            </Button>
-                                        </p>
-                                        : <p className="p-1 px-4 m-1 w-100 d-flex justify-content-between align-items-center" key={fact + i}>
-                                            {fact.name}
-                                            <Button onClick={() => this.showModal(fact)}>
-                                                +
-                                            </Button>
-                                        </p>
-                                    }
-                                </Card>
+                    {
+                        data.map((fact, i) => {
+                            return (
+                                <Col sm={12} md={6} lg={4} key={"col" + i}>
+                                    <Card className="resource-card d-flex align-items-center" key={"card" + fact + i} >
+                                        {
+                                            (url === "films")
+                                                ? <p className="p-1 px-4 m-1 w-100 d-flex justify-content-center align-items-center" key={fact + i}>
+                                                    {fact.title}
+                                                </p>
+                                                : <p className="p-1 px-4 m-1 w-100 d-flex justify-content-center align-items-center" key={fact + i}>
+                                                    {fact.name}
+                                                </p>
+                                        }
+                                    </Card>
+                                </Col>
+                            )
+                        })
+                    }
+                    {
+                        loading
+                            ?
+                            <Col sm={6}>
+                                <Spinner animation="border" role="status" variant="light" />
                             </Col>
-                        )
-                    })} 
+                            : null
+                    }
+                    <Col sm={6}>
+                        <Button onClick={this.loadMore}>
+                            Load more
+                        </Button>
+                    </Col>
                 </Row>
-                <Modal
-                    show={show}
-                    onHide={() => this.hideModal()}
-                    dialogClassName="modal-90w"
-                    aria-labelledby="detail"
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title id="detail">
-                            <p className="text-dark">{selected.name}</p>
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <ul>
-                            <li className="text-dark">Height: {selected.height}</li>
-                            <li className="text-dark">Mass: {selected.mass}</li>
-                            <li className="text-dark">Hair color: {selected.hair_color}</li>
-                            <li className="text-dark">Skin color: {selected.skin_color}</li>
-                            <li className="text-dark">Eyes color: {selected.eye_color}</li>
-                            <li className="text-dark">Birth year: {selected.birth_year}</li>
-                            <li className="text-dark">Gender: {selected.gender}</li>
-                        </ul>
-                    </Modal.Body>
-                </Modal>
             </Container>
         );
     }
