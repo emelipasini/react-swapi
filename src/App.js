@@ -6,6 +6,9 @@ import './App.css';
 import Home from "./components/Home";
 import Resource from "./components/Resource";
 
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+
 class App extends Component {
     render() {
         return (
@@ -13,7 +16,7 @@ class App extends Component {
                 <Router>
                     <header className="App-header">
                         <nav>
-                            <ul>
+                            <ul className="d-none d-md-flex">
                                 <li><Link to="/">Home</Link></li>
                                 <li><Link to="/people">People</Link></li>
                                 <li><Link to="/planets">Planets</Link></li>
@@ -22,6 +25,15 @@ class App extends Component {
                                 <li><Link to="/starships">Starships</Link></li>
                                 <li><Link to="/vehicles">Vehicles</Link></li>
                             </ul>
+                            <DropdownButton className="d-md-none" id="drop-menu" title="Menu">
+                                <Dropdown.Item><Link to="/">Home</Link></Dropdown.Item>
+                                <Dropdown.Item><Link to="/people">People</Link></Dropdown.Item>
+                                <Dropdown.Item><Link to="/planets">Planets</Link></Dropdown.Item>
+                                <Dropdown.Item><Link to="/films">Films</Link></Dropdown.Item>
+                                <Dropdown.Item><Link to="/species">Species</Link></Dropdown.Item>
+                                <Dropdown.Item><Link to="/starships">Starships</Link></Dropdown.Item>
+                                <Dropdown.Item><Link to="/vehicles">Vehicles</Link></Dropdown.Item>
+                            </DropdownButton>
                         </nav>
                     </header>
                     <Switch>
@@ -47,7 +59,7 @@ class App extends Component {
                     </Switch>
                 </Router>
 
-                <Router>
+                {/* <Router>
                     <footer>
                         <nav>
                             <ul className="">  
@@ -57,10 +69,10 @@ class App extends Component {
                         </nav>
                     </footer>
                     <Switch>
-                        {/* <Route path="/contact" component={} />
-                        <Route path="/about" component={} /> */}
+                        <Route path="/contact" component={} />
+                        <Route path="/about" component={} />
                     </Switch>
-                </Router>
+                </Router> */}
             </React.Fragment>
         );
     }

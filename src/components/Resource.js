@@ -45,17 +45,18 @@ class Resource extends Component {
         if (this.props.url !== prevProps.url) {
             this.setState({
                 url: this.props.url
+            }, function () {
+                this.fetchCall(
+                    "https://swapi.dev/api/" + this.state.url,
+                    data => {
+                        this.setState({
+                            data: data.results,
+                            loading: false,
+                            nextPage: data.next
+                        });
+                    }
+                );
             });
-            this.fetchCall(
-                "https://swapi.dev/api/" + this.state.url,
-                data => {
-                    this.setState({
-                        data: data.results,
-                        loading: false,
-                        nextPage: data.next
-                    });
-                }
-            );
         }
     }
 
@@ -73,9 +74,7 @@ class Resource extends Component {
                     data: [...oldData, ...data.results],
                     nextPage: nextp,
                     loading: false
-                }, function () {
-                    console.log(this.state.data);
-                })
+                });
             }
         );
     }
@@ -94,13 +93,13 @@ class Resource extends Component {
         }
         return (
             <Container>
-                <h2 className="my-2">{url.toUpperCase()}</h2>
+                <h2 className="my-2 pt-5 pb-2">{url.toUpperCase()}</h2>
                 <Row>
                     {
                         data.map((fact, i) => {
                             return (
                                 <Col sm={12} md={6} lg={4} key={"col" + i}>
-                                    <Card className="resource-card d-flex align-items-center" key={"card" + fact + i} >
+                                    <Card className="resource-card d-flex align-items-center m-3" key={"card" + fact + i} >
                                         {
                                             (url === "films")
                                                 ? <p className="p-1 px-4 m-1 w-100 d-flex justify-content-center align-items-center" key={fact + i}>
@@ -115,16 +114,18 @@ class Resource extends Component {
                             )
                         })
                     }
+                </Row>
+                <Row>
                     {
                         loading
                             ?
                             <Col sm={6}>
-                                <Spinner animation="border" role="status" variant="light" />
+                                <Spinner className="m-3" animation="border" role="status" variant="light" />
                             </Col>
                             : null
                     }
                     <Col sm={6}>
-                        <Button onClick={this.loadMore}>
+                        <Button className="m-3 btn-more" onClick={this.loadMore}>
                             Load more
                         </Button>
                     </Col>

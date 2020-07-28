@@ -5,11 +5,23 @@ header li, footer li {
     display: inline-block;
 }
 .resource-card {
-    width: 18rem;
     background-color: #66619e33 !important;
-    margin: 4%;
 }
-h2 {
-    padding-top: 5%;
-    padding-bottom: 2%;
+.home-page p, .home-page a{
+    font-size: 1.1rem;
+    padding-left: 7%;
+    padding-right: 7%;
+}
+.btn-more {
+    color: #027bf8 !important;
+    background-color: #0f0c29 !important;
+}
+#drop-menu {
+    background-color: #0f0c29;
+    color: #027bf8;
+    border: 0;
+    padding: 3%;
+}
+.dropdown-menu {
+    background-color: #0f0c29 !important;
 }
