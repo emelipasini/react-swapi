@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import './App.css';
 
-// Components
-import Home from "./components/Home";
-import Resource from "./components/Resource";
+// Componentes
+import Home from "./Home";
+import Resource from "./Resource";
 
+// React Bootstrap
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 
@@ -16,6 +17,7 @@ class App extends Component {
                 <Router>
                     <header className="App-header">
                         <nav>
+                            {/* Nav para pantallas md o superior */}
                             <ul className="d-none d-md-flex">
                                 <li><Link to="/">Home</Link></li>
                                 <li><Link to="/people">People</Link></li>
@@ -25,6 +27,7 @@ class App extends Component {
                                 <li><Link to="/starships">Starships</Link></li>
                                 <li><Link to="/vehicles">Vehicles</Link></li>
                             </ul>
+                            {/* Nav para telefonos */}
                             <DropdownButton className="d-md-none" id="drop-menu" title="Menu">
                                 <Dropdown.Item><Link to="/">Home</Link></Dropdown.Item>
                                 <Dropdown.Item><Link to="/people">People</Link></Dropdown.Item>
@@ -36,6 +39,7 @@ class App extends Component {
                             </DropdownButton>
                         </nav>
                     </header>
+                    {/* Renderiza el componente elegido */}
                     <Switch>
                         <Route exact path="/" component={Home} />
                         <Route path="/people" render={props => (
@@ -58,21 +62,6 @@ class App extends Component {
                         )} />
                     </Switch>
                 </Router>
-
-                {/* <Router>
-                    <footer>
-                        <nav>
-                            <ul className="">  
-                                <li><Link to="/contact">Contact</Link></li>
-                                <li><Link to="/about">About</Link></li>
-                            </ul>
-                        </nav>
-                    </footer>
-                    <Switch>
-                        <Route path="/contact" component={} />
-                        <Route path="/about" component={} />
-                    </Switch>
-                </Router> */}
             </React.Fragment>
         );
     }

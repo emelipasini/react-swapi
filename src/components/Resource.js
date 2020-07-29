@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 
+// React Bootstrap
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -19,6 +20,7 @@ class Resource extends Component {
         };
     }
 
+    // Llamadas asincronicas
     fetchCall = (endpoint, callback) => {
         fetch(endpoint)
             .then(res => res.json())
@@ -26,57 +28,59 @@ class Resource extends Component {
             .catch(err => console.log(err));
     }
 
+    // Se fija que la siguiente pagina exista
+    nextPageExists(data, oldData = null) {
+        let nextp = data.next;
+        let newData = data.results;
+        if (oldData) {
+            newData = [...oldData, ...newData];
+        }
+        if (nextp) {
+            // Arreglo de que la url viene con http
+            nextp = nextp.replace("http:", "https:");
+            this.setState({
+                data: newData,
+                nextPage: nextp,
+                loading: false
+            });
+        } else {
+            this.setState({
+                data: newData,
+                nextPage: null,
+                loading: false
+            });
+        }
+    }
+
+    // Montado del componente
     componentDidMount() {
         this.fetchCall(
             "https://swapi.dev/api/" + this.state.url,
             data => {
-                let nextp = data.next;
-                if (nextp) {
-                    nextp = nextp.replace("http:", "https:");
-                    this.setState({
-                        data: data.results,
-                        nextPage: nextp,
-                        loading: false
-                    });
-                } else {
-                    this.setState({
-                        data: data.results,
-                        loading: false
-                    });
-                }
+                this.nextPageExists(data);
             }
         );
     }
 
+    // Actualizacion del componente
     componentDidUpdate(prevProps) {
+        // Si la url cambio hace un nuevo llamado
         if (this.props.url !== prevProps.url) {
             this.setState({
                 url: this.props.url
             }, function () {
+                // Espera a que se guarde el nuevo estado y luego hace el llamado
                 this.fetchCall(
                     "https://swapi.dev/api/" + this.state.url,
                     data => {
-                        let nextp = data.next;
-                        if (nextp) {
-                            nextp = nextp.replace("http:", "https:");
-                            this.setState({
-                                data: data.results,
-                                nextPage: nextp,
-                                loading: false
-                            });
-                        } else {
-                            this.setState({
-                                data: data.results,
-                                nextPage: null,
-                                loading: false
-                            });
-                        }
+                        this.nextPageExists(data);
                     }
                 );
             });
         }
     }
 
+    // Trae mas informacion
     loadMore = () => {
         let {nextPage} = this.state;
         if (nextPage) {
@@ -85,23 +89,10 @@ class Resource extends Component {
             this.setState({
                 loading: true
             }, function () {
+                // Espera a que se guarde el nuevo estado y luego hace el llamado
                 this.fetchCall(
                     nextPage, data => {
-                        let nextp = data.next;
-                        if (nextp) {
-                            nextp = nextp.replace("http:", "https:");
-                            this.setState({
-                                data: [...oldData, ...data.results],
-                                nextPage: nextp,
-                                loading: false
-                            });
-                        } else {
-                            this.setState({
-                                data: [...oldData, ...data.results],
-                                nextPage: null,
-                                loading: false
-                            });
-                        }
+                        this.nextPageExists(data, oldData);
                     }
                 );
             });
@@ -110,6 +101,7 @@ class Resource extends Component {
 
     render() {
         let { data, url, loading } = this.state;
+        // Atajo por si se cae la API
         if(!data) {
             return (
                 <div className="m-3">
@@ -129,6 +121,7 @@ class Resource extends Component {
                             return (
                                 <Col sm={12} md={6} lg={4} key={"col" + i}>
                                     <Card className="resource-card d-flex align-items-center m-3" key={"card" + fact + i} >
+                                        {/* Todos tienen name menos films */}
                                         {
                                             (url === "films")
                                                 ? <p className="p-1 px-4 m-1 w-100 d-flex justify-content-center align-items-center" key={fact + i}>
@@ -145,6 +138,7 @@ class Resource extends Component {
                     }
                 </Row>
                 <Row>
+                    {/* Si esta cargando muestra un spinner */}
                     {
                         loading
                             ?
