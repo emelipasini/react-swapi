@@ -15,7 +15,7 @@ class Resource extends Component {
             data: [],
             url: props.url,
             loading: true,
-            nextPage: ""
+            nextPage: null
         };
     }
 
@@ -31,12 +31,19 @@ class Resource extends Component {
             "https://swapi.dev/api/" + this.state.url,
             data => {
                 let nextp = data.next;
-                nextp = nextp.replace("http:", "https:");
-                this.setState({
-                    nextPage: nextp,
-                    data: data.results,
-                    loading: false
-                });
+                if (nextp) {
+                    nextp = nextp.replace("http:", "https:");
+                    this.setState({
+                        data: data.results,
+                        nextPage: nextp,
+                        loading: false
+                    });
+                } else {
+                    this.setState({
+                        data: data.results,
+                        loading: false
+                    });
+                }
             }
         );
     }
@@ -49,11 +56,21 @@ class Resource extends Component {
                 this.fetchCall(
                     "https://swapi.dev/api/" + this.state.url,
                     data => {
-                        this.setState({
-                            data: data.results,
-                            loading: false,
-                            nextPage: data.next
-                        });
+                        let nextp = data.next;
+                        if (nextp) {
+                            nextp = nextp.replace("http:", "https:");
+                            this.setState({
+                                data: data.results,
+                                nextPage: nextp,
+                                loading: false
+                            });
+                        } else {
+                            this.setState({
+                                data: data.results,
+                                nextPage: null,
+                                loading: false
+                            });
+                        }
                     }
                 );
             });
@@ -62,21 +79,33 @@ class Resource extends Component {
 
     loadMore = () => {
         let {nextPage} = this.state;
-        let oldData = this.state.data;
-        this.setState({
-            loading: true
-        });
-        this.fetchCall(
-            nextPage, data => {
-                let nextp = data.next;
-                nextp = nextp.replace("http:", "https:");
-                this.setState({
-                    data: [...oldData, ...data.results],
-                    nextPage: nextp,
-                    loading: false
-                });
-            }
-        );
+        if (nextPage) {
+            let oldData = this.state.data;
+
+            this.setState({
+                loading: true
+            }, function () {
+                this.fetchCall(
+                    nextPage, data => {
+                        let nextp = data.next;
+                        if (nextp) {
+                            nextp = nextp.replace("http:", "https:");
+                            this.setState({
+                                data: [...oldData, ...data.results],
+                                nextPage: nextp,
+                                loading: false
+                            });
+                        } else {
+                            this.setState({
+                                data: [...oldData, ...data.results],
+                                nextPage: null,
+                                loading: false
+                            });
+                        }
+                    }
+                );
+            });
+        }
     }
 
     render() {
